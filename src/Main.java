@@ -31,5 +31,6 @@ public class Main extends JPanel{
         window.setResizable(true);
         grid = new Grid(60, 60, width, height);
         grid.fillGrid(.5f);
+//        this is a comment
     }
 }
