@@ -7,7 +7,7 @@ public class Node {
     public int y;
     public int cost;
     private final int generation;
-    private Node parent;
+    private final Node parent;
 
     Node(int x, int y, Node parent) {
         this.x = x;
@@ -22,5 +22,9 @@ public class Node {
         int yDistance = Math.abs(this.y - endY);
         int distance = xDistance * xDistance + yDistance * yDistance;
         this.cost = distance + this.generation;
+    }
+
+    public Node getParent() {
+        return this.parent;
     }
 }
