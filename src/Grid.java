@@ -28,7 +28,7 @@ public class Grid {
 
     public void fillGrid(float rate) {
         Random rand = new Random();
-        rate = Math.max(Math.min(rate, 1), 0);
+        rate = Math.max(Math.min(1 - rate, 1), 0);
         for (int r = 0; r < width; r++) {
             for (int c = 0; c < height; c++) {
                 if (rand.nextFloat() > rate) {
@@ -57,7 +57,7 @@ public class Grid {
         }
     }
 
-    public void chooseStartAndEnd() {
+    public Node chooseStartAndEnd() {
         Random rand = new Random();
         int startX = rand.nextInt(width);
         int startY = rand.nextInt(height);
@@ -73,5 +73,6 @@ public class Grid {
         }
         grid[startX][startY] = 5;
         grid[endX][endY] = 6;
+        return new Node(startX, startY, new Node(endX, endY));
     }
 }
