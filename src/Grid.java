@@ -56,4 +56,22 @@ public class Grid {
             }
         }
     }
+
+    public void chooseStartAndEnd() {
+        Random rand = new Random();
+        int startX = rand.nextInt(width);
+        int startY = rand.nextInt(height);
+        int endX = rand.nextInt(width);
+        int endY = rand.nextInt(height);
+        while (grid[startX][startY] == 1) {
+            startX = rand.nextInt(width);
+            startY = rand.nextInt(height);
+        }
+        while (grid[endX][endY] == 1 || (endX == startX && endY == startY)) {
+            endX = rand.nextInt(width);
+            endY = rand.nextInt(height);
+        }
+        grid[startX][startY] = 5;
+        grid[endX][endY] = 6;
+    }
 }
