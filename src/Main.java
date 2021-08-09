@@ -6,10 +6,14 @@ import java.awt.*;
 
 public class Main extends JPanel{
     static Grid grid;
-    ArrayList<Node> toBeConsidered;
-    ArrayList<Node> toBeConsideredCosts;
-    ArrayList<Node> considered;
-    ArrayList<Node> finalPath;
+    static Node start;
+    static Node end;
+
+    static ArrayList<Node> toBeConsidered;
+    static ArrayList<Node> toBeConsideredCosts;
+    static ArrayList<Node> considered;
+    static ArrayList<Node> finalPath;
+    static ArrayList<Integer> consideredCosts;
 
     public Main(int width, int height) {
         setSize(width, height);
@@ -22,8 +26,50 @@ public class Main extends JPanel{
         grid.draw(g2);
         /*
         There are a few steps to each tick:
-        Consider the first item in the SORTED toBeConsideredCosts
+        Consider the first item in the SORTED toBeConsidered
+        Add it to considered if it's not the end
+        I'll finish this later xD
         */
+    }
+
+    private void consider(int toBeConsideredIndex) {
+        Node toConsider = toBeConsidered.get(toBeConsideredIndex);
+        int cost = toConsider.calculateCost(end);
+
+    }
+
+    private int findOptimalIndex(int newNumber) {
+        // Just binary search.
+        // int consideredCostsSize = consideredCosts.size();
+        // int currentLookingAtIndex = consideredCostsSize / 2;
+        // int stepSize = consideredCostsSize / 2;
+        // int previousLookingAtIndex;
+        // while (true) {
+        //     if (consideredCosts.get(currentLookingAtIndex) == newNumber) {
+        //         break;
+        //     }
+        //     else if (consideredCosts.get(currentLookingAtIndex) < newNumber) {
+        //         previousLookingAtIndex = currentLookingAtIndex;
+        //         currentLookingAtIndex /= 2;
+        //     }
+        //     else {
+        //         previousLookingAtIndex = currentLookingAtIndex;
+        //         currentLookingAtIndex = currentLookingAtIndex / 2 + currentLookingAtIndex;
+        //     }
+        // }
+        // return currentLookingAtIndex;
+        // Never mind, normal search
+        int consideredCostsSize = consideredCosts.size();
+        int index = 0;
+        for (int i = 0; i < consideredCostsSize; i++) {
+            if (consideredCosts.get(i) == newNumber) {
+                index = i;
+            }
+            else if (consideredCosts.get(i) > newNumber) {
+                index = i - 1;
+            }
+        }
+        return index;
     }
 
     public static void main(String[] args) {
@@ -41,9 +87,9 @@ public class Main extends JPanel{
         grid = new Grid(60, 60, width, height);
         grid.fillGrid(.25f);
         Node temp = grid.chooseStartAndEnd();
-        Node start = new Node(temp.x, temp.y);
-        Node end = temp.getParent();
+        start = new Node(temp.x, temp.y);
+        end = temp.getParent();
         // Now, start the algorithm by putting the start in the toBeConsidered list
-
+        toBeConsidered.add(start);
     }
 }
