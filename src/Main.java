@@ -9,11 +9,10 @@ public class Main extends JPanel{
     static Node start;
     static Node end;
 
+    static ArrayList<Integer> toBeConsideredCosts;
     static ArrayList<Node> toBeConsidered;
-    static ArrayList<Node> toBeConsideredCosts;
     static ArrayList<Node> considered;
     static ArrayList<Node> finalPath;
-    static ArrayList<Integer> consideredCosts;
 
     public Main(int width, int height) {
         setSize(width, height);
@@ -24,19 +23,24 @@ public class Main extends JPanel{
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
         grid.draw(g2);
-        /*
-        There are a few steps to each tick:
-        Consider the first item in the SORTED toBeConsidered
-        Add it to considered if it's not the end
-        I'll finish this later xD
-        */
+        tick();
     }
 
-    private void consider(int toBeConsideredIndex) {
-        Node toConsider = toBeConsidered.get(toBeConsideredIndex);
+    private void tick() {
+        consider(toBeConsidered.get(0));
+    }
+
+    private void consider(Node toConsider) {
         considered.add(toConsider);
         grid.setAt(toConsider.x, toConsider.y, 3);
 
+    }
+
+    private void addToBeConsidered(Node subject) {
+        int cost = subject.calculateCost(end);
+        int index = findOptimalIndex(cost);
+        toBeConsidered.add(index, subject);
+        toBeConsideredCosts.add(index, cost);
     }
 
     private int findOptimalIndex(int newNumber) {
@@ -60,13 +64,13 @@ public class Main extends JPanel{
         // }
         // return currentLookingAtIndex;
         // Never mind, normal search
-        int consideredCostsSize = consideredCosts.size();
+        int consideredCostsSize = toBeConsideredCosts.size();
         int index = 0;
         for (int i = 0; i < consideredCostsSize; i++) {
-            if (consideredCosts.get(i) == newNumber) {
+            if (toBeConsideredCosts.get(i) == newNumber) {
                 index = i;
             }
-            else if (consideredCosts.get(i) > newNumber) {
+            else if (toBeConsideredCosts.get(i) > newNumber) {
                 index = i - 1;
             }
         }
