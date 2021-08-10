@@ -34,7 +34,8 @@ public class Main extends JPanel{
 
     private void consider(int toBeConsideredIndex) {
         Node toConsider = toBeConsidered.get(toBeConsideredIndex);
-        int cost = toConsider.calculateCost(end);
+        considered.add(toConsider);
+        grid.setAt(toConsider.x, toConsider.y, 3);
 
     }
 

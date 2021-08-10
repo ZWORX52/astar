@@ -75,4 +75,8 @@ public class Grid {
         grid[endX][endY] = 6;
         return new Node(startX, startY, new Node(endX, endY));
     }
+
+    public void setAt(int x, int y, int newValue) {
+        grid[x][y] = newValue;
+    }
 }
