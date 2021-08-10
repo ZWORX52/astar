@@ -90,12 +90,16 @@ public class Main extends JPanel{
         return !indexWasSet ? consideredCostsSize - 1 : index;
     }
 
+    private void setupComponents(JFrame window) {
+        new JButton("Run program");
+    }
+
     public static void main(String[] args) {
         JFrame window = new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         int width = 616;
         int height = 616;
-        window.setBounds(0, 0, width, height + 22); // (x, y, w, h) 22 due to title bar.
+        window.setBounds(0, 0, width, height + 22 + 50); // (x, y, w, h) 22 due to title bar.
         Main panel = new Main(width, height);
         panel.setFocusable(true);
         panel.grabFocus();
