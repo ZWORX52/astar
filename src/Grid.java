@@ -22,7 +22,6 @@ public class Grid {
         this.width = width;
         this.height = height;
         if (windowWidth != windowHeight) return;
-        this.boxSize = windowWidth / width;
         this.boxSize = 10;
     }
 
@@ -78,5 +77,12 @@ public class Grid {
 
     public void setAt(int x, int y, int newValue) {
         grid[x][y] = newValue;
+    }
+
+    public int getAt(int x, int y) {
+        if (x < 0 || y < 0 || x >= height || y >= width) {
+            return -1;
+        }
+        return grid[x][y];
     }
 }

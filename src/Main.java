@@ -9,10 +9,10 @@ public class Main extends JPanel{
     static Node start;
     static Node end;
 
-    static ArrayList<Integer> toBeConsideredCosts;
-    static ArrayList<Node> toBeConsidered;
-    static ArrayList<Node> considered;
-    static ArrayList<Node> finalPath;
+    static ArrayList<Integer> toBeConsideredCosts = new ArrayList<>();
+    static ArrayList<Node> toBeConsidered = new ArrayList<>();
+    static ArrayList<Node> considered = new ArrayList<> ();
+    static ArrayList<Node> finalPath = new ArrayList<> ();
 
     public Main(int width, int height) {
         setSize(width, height);
@@ -27,19 +27,29 @@ public class Main extends JPanel{
     }
 
     private void tick() {
+        System.out.println("considered = " + considered);
+        System.out.println("toBeConsidered = " + toBeConsidered);
         consider(toBeConsidered.get(0));
     }
 
     private void consider(Node toConsider) {
         considered.add(toConsider);
         grid.setAt(toConsider.x, toConsider.y, 3);
-
+        int[][] directions = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}};
+        for (int r = 0; r < 4; r++) {
+            int newX = toConsider.x + directions[r][0];
+            int newY = toConsider.y + directions[r][1];
+            if (grid.getAt(newX, newY) == 0) {
+                addToBeConsidered(new Node(newX, newY, toConsider));
+            }
+        }
     }
 
     private void addToBeConsidered(Node subject) {
         int cost = subject.calculateCost(end);
         int index = findOptimalIndex(cost);
         toBeConsidered.add(index, subject);
+        grid.setAt(subject.x, subject.y, 2);
         toBeConsideredCosts.add(index, cost);
     }
 
@@ -66,15 +76,18 @@ public class Main extends JPanel{
         // Never mind, normal search
         int consideredCostsSize = toBeConsideredCosts.size();
         int index = 0;
+        boolean indexWasSet = false;
         for (int i = 0; i < consideredCostsSize; i++) {
             if (toBeConsideredCosts.get(i) == newNumber) {
                 index = i;
+                indexWasSet = true;
             }
             else if (toBeConsideredCosts.get(i) > newNumber) {
-                index = i - 1;
+                index = (i == 0) ? i : i - 1;
+                indexWasSet = true;
             }
         }
-        return index;
+        return !indexWasSet ? consideredCostsSize - 1 : index;
     }
 
     public static void main(String[] args) {
@@ -96,5 +109,6 @@ public class Main extends JPanel{
         end = temp.getParent();
         // Now, start the algorithm by putting the start in the toBeConsidered list
         toBeConsidered.add(start);
+        toBeConsideredCosts.add(start.calculateCost(end));
     }
 }
