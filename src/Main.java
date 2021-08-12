@@ -1,7 +1,7 @@
 import javax.swing.*;
 import java.util.*;
 import java.awt.*;
-
+import java.util.Timer;
 
 
 public class Main extends JPanel{
@@ -23,17 +23,20 @@ public class Main extends JPanel{
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
         grid.draw(g2);
-        tick();
     }
 
-    private void tick() {
+    private static void tick() {
         System.out.println("considered = " + considered);
         System.out.println("toBeConsidered = " + toBeConsidered);
         consider(toBeConsidered.get(0));
     }
 
-    private void consider(Node toConsider) {
+    private static void consider(Node toConsider) {
         considered.add(toConsider);
+        if (toConsider.x == end.x && toConsider.y == end.y) {
+            calculateFinalPath(toConsider);
+            return;
+        }
         grid.setAt(toConsider.x, toConsider.y, 3);
         int[][] directions = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}};
         for (int r = 0; r < 4; r++) {
@@ -45,7 +48,17 @@ public class Main extends JPanel{
         }
     }
 
-    private void addToBeConsidered(Node subject) {
+    private static void calculateFinalPath(Node gotToEnd) {
+        Node nextToLookAt = gotToEnd;
+        while (nextToLookAt != null) {
+            finalPath.add(nextToLookAt);
+            grid.setAt(nextToLookAt.x, nextToLookAt.y, 4);
+            nextToLookAt = nextToLookAt.getParent();
+        }
+
+    }
+
+    private static void addToBeConsidered(Node subject) {
         int cost = subject.calculateCost(end);
         int index = findOptimalIndex(cost);
         toBeConsidered.add(index, subject);
@@ -53,7 +66,7 @@ public class Main extends JPanel{
         toBeConsideredCosts.add(index, cost);
     }
 
-    private int findOptimalIndex(int newNumber) {
+    private static int findOptimalIndex(int newNumber) {
         // Just binary search.
         // int consideredCostsSize = consideredCosts.size();
         // int currentLookingAtIndex = consideredCostsSize / 2;
@@ -90,8 +103,8 @@ public class Main extends JPanel{
         return !indexWasSet ? consideredCostsSize - 1 : index;
     }
 
-    private void setupComponents(JFrame window) {
-        new JButton("Run program");
+    private static void setupComponents(JFrame window) {
+        window.add("button1", new JButton("Start Program"));
     }
 
     public static void main(String[] args) {
@@ -106,6 +119,7 @@ public class Main extends JPanel{
         window.add(panel);
         window.setVisible(true);
         window.setResizable(true);
+        setupComponents(window);
         grid = new Grid(60, 60, width, height);
         grid.fillGrid(.25f);
         Node temp = grid.chooseStartAndEnd();
@@ -114,5 +128,13 @@ public class Main extends JPanel{
         // Now, start the algorithm by putting the start in the toBeConsidered list
         toBeConsidered.add(start);
         toBeConsideredCosts.add(start.calculateCost(end));
+        TimerTask newTask = new TimerTask() {
+            @Override
+            public void run() {
+                tick();
+            }
+        };
+        java.util.Timer timer = new Timer(true);
+        timer.scheduleAtFixedRate(newTask, 0, 17);
     }
 }
