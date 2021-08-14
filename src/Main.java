@@ -1,8 +1,7 @@
 import javax.swing.*;
 import java.util.*;
 import java.awt.*;
-import java.util.Timer;
-
+// import java.util.Timer;
 
 public class Main extends JPanel{
     static Grid grid;
@@ -33,11 +32,11 @@ public class Main extends JPanel{
 
     private static void consider(Node toConsider) {
         considered.add(toConsider);
+        grid.setAt(toConsider.x, toConsider.y, 3);
         if (toConsider.x == end.x && toConsider.y == end.y) {
             calculateFinalPath(toConsider);
             return;
         }
-        grid.setAt(toConsider.x, toConsider.y, 3);
         int[][] directions = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}};
         for (int r = 0; r < 4; r++) {
             int newX = toConsider.x + directions[r][0];
@@ -62,8 +61,8 @@ public class Main extends JPanel{
         int cost = subject.calculateCost(end);
         int index = findOptimalIndex(cost);
         toBeConsidered.add(index, subject);
-        grid.setAt(subject.x, subject.y, 2);
         toBeConsideredCosts.add(index, cost);
+        grid.setAt(subject.x, subject.y, 2);
     }
 
     private static int findOptimalIndex(int newNumber) {
