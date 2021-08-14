@@ -23,11 +23,11 @@ public class Main extends JPanel{
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
         grid.draw(g2);
+        tick();
+        repaint();
     }
 
     private static void tick() {
-        System.out.println("considered = " + considered);
-        System.out.println("toBeConsidered = " + toBeConsidered);
         consider(toBeConsidered.get(0));
     }
 
@@ -103,23 +103,18 @@ public class Main extends JPanel{
         return !indexWasSet ? consideredCostsSize - 1 : index;
     }
 
-    private static void setupComponents(JFrame window) {
-        window.add("button1", new JButton("Start Program"));
-    }
-
     public static void main(String[] args) {
         JFrame window = new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         int width = 616;
         int height = 616;
-        window.setBounds(0, 0, width, height + 22 + 50); // (x, y, w, h) 22 due to title bar.
+        window.setBounds(0, 0, width, height + 22); // (x, y, w, h) 22 due to title bar.
         Main panel = new Main(width, height);
         panel.setFocusable(true);
         panel.grabFocus();
         window.add(panel);
         window.setVisible(true);
         window.setResizable(true);
-        setupComponents(window);
         grid = new Grid(60, 60, width, height);
         grid.fillGrid(.25f);
         Node temp = grid.chooseStartAndEnd();
@@ -128,13 +123,13 @@ public class Main extends JPanel{
         // Now, start the algorithm by putting the start in the toBeConsidered list
         toBeConsidered.add(start);
         toBeConsideredCosts.add(start.calculateCost(end));
-        TimerTask newTask = new TimerTask() {
-            @Override
-            public void run() {
-                tick();
-            }
-        };
-        java.util.Timer timer = new Timer(true);
-        timer.scheduleAtFixedRate(newTask, 0, 17);
+//        TimerTask newTask = new TimerTask() {
+//            @Override
+//            public void run() {
+//                tick();
+//            }
+//        };
+//        java.util.Timer timer = new Timer(true);
+//        timer.scheduleAtFixedRate(newTask, 0, 17);
     }
 }
