@@ -1,12 +1,15 @@
+// import java.awt.event.*;
+import java.util.Timer;
 import javax.swing.*;
 import java.util.*;
 import java.awt.*;
-// import java.util.Timer;
 
-public class Main extends JPanel{
+
+public class Main extends JPanel {
     static Grid grid;
     static Node start;
     static Node end;
+    static int c;
     static boolean done;
 
     static ArrayList<Integer> toBeConsideredCosts = new ArrayList<>();
@@ -23,9 +26,10 @@ public class Main extends JPanel{
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
         grid.draw(g2);
-        if (!done) {
+        if (!done && c % 4 == 0) {
             tick();
         }
+        c++;
         repaint();
     }
 
@@ -109,7 +113,11 @@ public class Main extends JPanel{
         //     }
         // }
         // return !indexWasSet ? consideredCostsSize - 1 : index;
-        return toBeConsideredCosts.binarySearch(newnumber);
+        int index = Arrays.binarySearch(toBeConsideredCosts.toArray(), newNumber);
+        if (index >= 0) {
+            return index;
+        }
+        return -(index + 1);
     }
 
     public static void main(String[] args) {
@@ -132,13 +140,5 @@ public class Main extends JPanel{
         // Now, start the algorithm by putting the start in the toBeConsidered list
         toBeConsidered.add(start);
         toBeConsideredCosts.add(start.calculateCost(end));
-//        TimerTask newTask = new TimerTask() {
-//            @Override
-//            public void run() {
-//                tick();
-//            }
-//        };
-//        java.util.Timer timer = new Timer(true);
-//        timer.scheduleAtFixedRate(newTask, 0, 17);
     }
 }
