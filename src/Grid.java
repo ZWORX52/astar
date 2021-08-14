@@ -38,6 +38,7 @@ public class Grid {
     }
 
     public void draw(Graphics2D g2) {
+        System.out.println("I've been called!");
         for (int r = 0; r < width; r++) {
             for (int c = 0; c < height; c++) {
                 switch (grid[r][c]) {
