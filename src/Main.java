@@ -1,5 +1,4 @@
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
 import java.awt.*;
@@ -53,6 +52,35 @@ public class Main extends JPanel {
 
             @Override
             public void keyTyped(KeyEvent e) {
+
+            }
+        });
+    }
+
+    public void setupMouseListener() {
+        addMouseListener(new MouseListener() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                // Would put edit square here but have to go
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
 
             }
         });
