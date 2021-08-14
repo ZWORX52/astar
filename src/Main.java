@@ -95,20 +95,21 @@ public class Main extends JPanel{
         // }
         // return currentLookingAtIndex;
         // Never mind, normal search
-        int consideredCostsSize = toBeConsideredCosts.size();
-        int index = 0;
-        boolean indexWasSet = false;
-        for (int i = 0; i < consideredCostsSize; i++) {
-            if (toBeConsideredCosts.get(i) == newNumber) {
-                index = i;
-                indexWasSet = true;
-            }
-            else if (toBeConsideredCosts.get(i) > newNumber) {
-                index = (i == 0) ? i : i - 1;
-                indexWasSet = true;
-            }
-        }
-        return !indexWasSet ? consideredCostsSize - 1 : index;
+        // int consideredCostsSize = toBeConsideredCosts.size();
+        // int index = 0;
+        // boolean indexWasSet = false;
+        // for (int i = 0; i < consideredCostsSize; i++) {
+        //     if (toBeConsideredCosts.get(i) == newNumber) {
+        //         index = i;
+        //         indexWasSet = true;
+        //     }
+        //     else if (toBeConsideredCosts.get(i) > newNumber) {
+        //         index = (i == 0) ? i : i - 1;
+        //         indexWasSet = true;
+        //     }
+        // }
+        // return !indexWasSet ? consideredCostsSize - 1 : index;
+        return toBeConsideredCosts.binarySearch(newnumber);
     }
 
     public static void main(String[] args) {
