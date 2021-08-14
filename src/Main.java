@@ -7,6 +7,7 @@ public class Main extends JPanel{
     static Grid grid;
     static Node start;
     static Node end;
+    static boolean done;
 
     static ArrayList<Integer> toBeConsideredCosts = new ArrayList<>();
     static ArrayList<Node> toBeConsidered = new ArrayList<>();
@@ -22,12 +23,14 @@ public class Main extends JPanel{
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
         grid.draw(g2);
-        tick();
+        if (!done) {
+            tick();
+        }
         repaint();
     }
 
     private static void tick() {
-        consider(toBeConsidered.get(0));
+        consider(toBeConsidered.remove(0));
     }
 
     private static void consider(Node toConsider) {
@@ -35,6 +38,7 @@ public class Main extends JPanel{
         grid.setAt(toConsider.x, toConsider.y, 3);
         if (toConsider.x == end.x && toConsider.y == end.y) {
             calculateFinalPath(toConsider);
+            done = true;
             return;
         }
         int[][] directions = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}};
@@ -60,7 +64,12 @@ public class Main extends JPanel{
     private static void addToBeConsidered(Node subject) {
         int cost = subject.calculateCost(end);
         int index = findOptimalIndex(cost);
-        toBeConsidered.add(index, subject);
+        if (index >= toBeConsidered.size()) {
+            toBeConsidered.add(subject);
+        }
+        else {
+            toBeConsidered.add(index, subject);
+        }
         toBeConsideredCosts.add(index, cost);
         grid.setAt(subject.x, subject.y, 2);
     }

@@ -22,7 +22,7 @@ public class Node {
         this.generation = 0;
     }
 
-    public int calculateCost(Node this, Node end) {
+    public int calculateCost(Node end) {
         // Cost is the generation + (x distance to end ^ 2 + y distance to end ^ 2)
         int xDistance = Math.abs(this.x - end.x);
         int yDistance = Math.abs(this.y - end.x);
