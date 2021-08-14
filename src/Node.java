@@ -25,7 +25,7 @@ public class Node {
     public int calculateCost(Node end) {
         // Cost is the generation + (x distance to end ^ 2 + y distance to end ^ 2)
         int xDistance = Math.abs(this.x - end.x);
-        int yDistance = Math.abs(this.y - end.x);
+        int yDistance = Math.abs(this.y - end.y);
         int distance = xDistance * xDistance + yDistance * yDistance;
         return distance + this.generation;
     }

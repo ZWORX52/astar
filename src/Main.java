@@ -1,5 +1,5 @@
-// import java.awt.event.*;
-import java.util.Timer;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import javax.swing.*;
 import java.util.*;
 import java.awt.*;
@@ -10,15 +10,17 @@ public class Main extends JPanel {
     static Node start;
     static Node end;
     static int c;
+    static int pathLength;
     static boolean done;
 
-    static ArrayList<Integer> toBeConsideredCosts = new ArrayList<>();
-    static ArrayList<Node> toBeConsidered = new ArrayList<>();
+    static ArrayList<Integer> toBeConsideredCosts = new ArrayList<> ();
+    static ArrayList<Node> toBeConsidered = new ArrayList<> ();
     static ArrayList<Node> considered = new ArrayList<> ();
     static ArrayList<Node> finalPath = new ArrayList<> ();
 
     public Main(int width, int height) {
         setSize(width, height);
+        setupKeyListener();
     }
 
     @Override
@@ -26,15 +28,60 @@ public class Main extends JPanel {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
         grid.draw(g2);
-        if (!done && c % 4 == 0) {
+        if (!done) {
             tick();
         }
         c++;
         repaint();
     }
 
+    public void setupKeyListener() {
+        addKeyListener(new KeyListener() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                char key = e.getKeyChar();
+                if (key == 'r') {
+                    System.out.println("R DETECTED :D");
+                    resetGrid();
+                }
+            }
+
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+        });
+    }
+
+    public static void resetGrid() {
+        done = false;
+        grid.fillGrid(.25f);
+        Node temp = grid.chooseStartAndEnd();
+        start = new Node(temp.x, temp.y);
+        end = temp.getParent();
+        toBeConsideredCosts = new ArrayList<> ();
+        toBeConsidered = new ArrayList<> ();
+        considered = new ArrayList<> ();
+        finalPath = new ArrayList<> ();
+        pathLength = 0;
+        c = 0;
+        toBeConsidered.add(start);
+        toBeConsideredCosts.add(start.calculateCost(end));
+    }
+
     private static void tick() {
-        consider(toBeConsidered.remove(0));
+        try {
+            consider(toBeConsidered.remove(0));
+        }
+        catch (Exception e) {
+            System.out.println("No path was found");
+            done = true;
+        }
     }
 
     private static void consider(Node toConsider) {
@@ -42,6 +89,7 @@ public class Main extends JPanel {
         grid.setAt(toConsider.x, toConsider.y, 3);
         if (toConsider.x == end.x && toConsider.y == end.y) {
             calculateFinalPath(toConsider);
+            System.out.println(pathLength);
             done = true;
             return;
         }
@@ -49,7 +97,7 @@ public class Main extends JPanel {
         for (int r = 0; r < 4; r++) {
             int newX = toConsider.x + directions[r][0];
             int newY = toConsider.y + directions[r][1];
-            if (grid.getAt(newX, newY) == 0) {
+            if (grid.getAt(newX, newY) == 0 || grid.getAt(newX, newY) == 6) {
                 addToBeConsidered(new Node(newX, newY, toConsider));
             }
         }
@@ -60,9 +108,9 @@ public class Main extends JPanel {
         while (nextToLookAt != null) {
             finalPath.add(nextToLookAt);
             grid.setAt(nextToLookAt.x, nextToLookAt.y, 4);
+            pathLength++;
             nextToLookAt = nextToLookAt.getParent();
         }
-
     }
 
     private static void addToBeConsidered(Node subject) {

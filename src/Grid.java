@@ -33,6 +33,9 @@ public class Grid {
                 if (rand.nextFloat() > rate) {
                     grid[r][c] = 1;
                 }
+                else {
+                    grid[r][c] = 0;
+                }
             }
         }
     }
