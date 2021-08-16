@@ -8,9 +8,12 @@ public class Main extends JPanel {
     static Grid grid;
     static Node start;
     static Node end;
+    static JFrame window;
     static int c;
     static int pathLength;
     static boolean done;
+    static boolean running;
+    static boolean mouseInWindow;
 
     static ArrayList<Integer> toBeConsideredCosts = new ArrayList<> ();
     static ArrayList<Node> toBeConsidered = new ArrayList<> ();
@@ -20,6 +23,7 @@ public class Main extends JPanel {
     public Main(int width, int height) {
         setSize(width, height);
         setupKeyListener();
+        setupMouseListener();
     }
 
     @Override
@@ -27,7 +31,7 @@ public class Main extends JPanel {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D)g;
         grid.draw(g2);
-        if (!done) {
+        if (!done && running) {
             tick();
         }
         c++;
@@ -45,8 +49,10 @@ public class Main extends JPanel {
             public void keyReleased(KeyEvent e) {
                 char key = e.getKeyChar();
                 if (key == 'r') {
-                    System.out.println("R DETECTED :D");
                     resetGrid();
+                }
+                else if (key == 's') {
+                    running = true;
                 }
             }
 
@@ -61,12 +67,20 @@ public class Main extends JPanel {
         addMouseListener(new MouseListener() {
             @Override
             public void mousePressed(MouseEvent e) {
-
+                Point mousePos = window.getMousePosition();
+                int gridX = mousePos.x / 10;
+                int gridY = mousePos.y / 10;
+                if (SwingUtilities.isLeftMouseButton(e) && !running && mouseInWindow) {
+                    grid.setAt(gridX, gridY, 1);
+                }
+                else if (SwingUtilities.isRightMouseButton(e) && !running && mouseInWindow) {
+                    grid.setAt(gridX, gridY, 0);
+                }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                // Would put edit square here but have to go
+
             }
 
             @Override
@@ -76,18 +90,21 @@ public class Main extends JPanel {
 
             @Override
             public void mouseEntered(MouseEvent e) {
-
+                System.out.println("Mouse entered");
+                mouseInWindow = true;
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-
+                System.out.println("Mouse exited");
+                mouseInWindow = false;
             }
         });
     }
 
     public static void resetGrid() {
         done = false;
+        running = false;
         grid.fillGrid(.25f);
         Node temp = grid.chooseStartAndEnd();
         start = new Node(temp.x, temp.y);
@@ -155,40 +172,6 @@ public class Main extends JPanel {
     }
 
     private static int findOptimalIndex(int newNumber) {
-        // Just binary search.
-        // int consideredCostsSize = consideredCosts.size();
-        // int currentLookingAtIndex = consideredCostsSize / 2;
-        // int stepSize = consideredCostsSize / 2;
-        // int previousLookingAtIndex;
-        // while (true) {
-        //     if (consideredCosts.get(currentLookingAtIndex) == newNumber) {
-        //         break;
-        //     }
-        //     else if (consideredCosts.get(currentLookingAtIndex) < newNumber) {
-        //         previousLookingAtIndex = currentLookingAtIndex;
-        //         currentLookingAtIndex /= 2;
-        //     }
-        //     else {
-        //         previousLookingAtIndex = currentLookingAtIndex;
-        //         currentLookingAtIndex = currentLookingAtIndex / 2 + currentLookingAtIndex;
-        //     }
-        // }
-        // return currentLookingAtIndex;
-        // Never mind, normal search
-        // int consideredCostsSize = toBeConsideredCosts.size();
-        // int index = 0;
-        // boolean indexWasSet = false;
-        // for (int i = 0; i < consideredCostsSize; i++) {
-        //     if (toBeConsideredCosts.get(i) == newNumber) {
-        //         index = i;
-        //         indexWasSet = true;
-        //     }
-        //     else if (toBeConsideredCosts.get(i) > newNumber) {
-        //         index = (i == 0) ? i : i - 1;
-        //         indexWasSet = true;
-        //     }
-        // }
-        // return !indexWasSet ? consideredCostsSize - 1 : index;
         int index = Arrays.binarySearch(toBeConsideredCosts.toArray(), newNumber);
         if (index >= 0) {
             return index;
@@ -208,6 +191,7 @@ public class Main extends JPanel {
         window.add(panel);
         window.setVisible(true);
         window.setResizable(true);
+        Main.window = window;
         grid = new Grid(60, 60, width, height);
         grid.fillGrid(.25f);
         Node temp = grid.chooseStartAndEnd();
