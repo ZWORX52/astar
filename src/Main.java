@@ -42,7 +42,6 @@ public class Main extends JPanel {
         addKeyListener(new KeyListener() {
             @Override
             public void keyPressed(KeyEvent e) {
-
             }
 
             @Override
@@ -58,7 +57,6 @@ public class Main extends JPanel {
 
             @Override
             public void keyTyped(KeyEvent e) {
-
             }
         });
     }
@@ -67,36 +65,34 @@ public class Main extends JPanel {
         addMouseListener(new MouseListener() {
             @Override
             public void mousePressed(MouseEvent e) {
-                Point mousePos = window.getMousePosition();
-                int gridX = mousePos.x / 10;
-                int gridY = mousePos.y / 10;
-                if (SwingUtilities.isLeftMouseButton(e) && !running && mouseInWindow) {
-                    grid.setAt(gridX, gridY, 1);
-                }
-                else if (SwingUtilities.isRightMouseButton(e) && !running && mouseInWindow) {
-                    grid.setAt(gridX, gridY, 0);
-                }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-
             }
 
             @Override
             public void mouseClicked(MouseEvent e) {
-
+                Point mousePos = window.getMousePosition();
+                // IT IS NOT WRONG, I NEED IT LIKE THIS BECAUSE OF COORDS -> ARRAY LOCATIONS
+                int gridX = mousePos.y / 10 - 3;
+                int gridY = mousePos.x / 10 - 1;
+                System.out.println("X and Y are: " + mousePos.x + " " + mousePos.y);
+                if (SwingUtilities.isLeftMouseButton(e) && !running && mouseInWindow) {
+                    if (grid.getAt(gridX, gridY) == 0) grid.setAt(gridX, gridY, 1);
+                }
+                else if (SwingUtilities.isRightMouseButton(e) && !running && mouseInWindow) {
+                    if (grid.getAt(gridX, gridY) == 1) grid.setAt(gridX, gridY, 0);
+                }
             }
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                System.out.println("Mouse entered");
                 mouseInWindow = true;
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                System.out.println("Mouse exited");
                 mouseInWindow = false;
             }
         });
