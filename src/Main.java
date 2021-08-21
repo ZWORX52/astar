@@ -10,6 +10,7 @@ public class Main extends JPanel {
     static Node end;
     static JFrame window;
     static int c;
+    static int tick;
     static int pathLength;
     static boolean done;
     static boolean running;
@@ -178,16 +179,41 @@ public class Main extends JPanel {
     public static void main(String[] args) {
         JFrame window = new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        int width = 616;
-        int height = 616;
+        int width = 666;
+        int height = 700;
         window.setBounds(0, 0, width, height + 22); // (x, y, w, h) 22 due to title bar.
+
+        JPanel screenPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
         Main panel = new Main(width, height);
         panel.setFocusable(true);
-        panel.grabFocus();
-        window.add(panel);
+        panel.setVisible(true);
+
+        c.fill = GridBagConstraints.BOTH;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.ipadx = 616;
+        c.ipady = 616;
+        screenPanel.add(panel, c);
+
+        JSlider slider = new JSlider(JSlider.HORIZONTAL, 1, 31, 1);
+        slider.setMajorTickSpacing(10);
+        slider.setMinorTickSpacing(1);
+        slider.setPaintTicks(true);
+        slider.setPaintLabels(true);
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.gridy = 1;
+        c.ipadx = 100;
+        c.ipady = 84;
+        screenPanel.add(slider, c);
+
+        window.add(screenPanel);
         window.setVisible(true);
         window.setResizable(true);
         Main.window = window;
+
         grid = new Grid(60, 60, width, height);
         grid.fillGrid(.25f);
         Node temp = grid.chooseStartAndEnd();
