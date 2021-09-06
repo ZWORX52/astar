@@ -1,7 +1,7 @@
 // import java.util.*;
 
 
-// I need Node for two reasons: the backtracking and generation tracking (for the A* algorithm, a square's score is distance from end + generation)
+// I need Node for two reasons: the backtracking and generation tracking (for the a* algorithm, a square's score is distance from end + generation)
 public class Node {
     public int x;
     public int y;
@@ -20,24 +20,6 @@ public class Node {
         this.y = y;
         this.parent = null;
         this.generation = 0;
-    }
-
-    public int calculateCost(Node end, Algorithm algo) {
-        if (algo == Algorithm.ASTAR) {
-            int xDistance = Math.abs(this.x - end.x);
-            int yDistance = Math.abs(this.y - end.y);
-            int distance = xDistance * xDistance + yDistance * yDistance;
-            return distance + this.generation;
-        }
-        else if (algo == Algorithm.BRUTEFORCE) {
-            return generation;
-        }
-        else if (algo == Algorithm.STRAIGHTLINE) {
-            int xDistance = Math.abs(this.x - end.x);
-            int yDistance = Math.abs(this.y - end.y);
-            return xDistance * xDistance + yDistance * yDistance;
-        }
-        return 0;
     }
 
     public int calculateCost(Node end) {

@@ -10,11 +10,13 @@ public class Main extends JPanel {
     static Node end;
     static JFrame window;
     static int c;
-    static int tick;
+    static int rate = 1;
     static int pathLength;
+    static float fillRate = .25f;
     static boolean done;
     static boolean running;
-    static boolean mouseInWindow;
+
+    static Algorithm algorithm = Algorithm.ASTAR;
 
     static ArrayList<Integer> toBeConsideredCosts = new ArrayList<> ();
     static ArrayList<Node> toBeConsidered = new ArrayList<> ();
@@ -30,11 +32,9 @@ public class Main extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        Graphics2D g2 = (Graphics2D)g;
+        Graphics2D g2 = (Graphics2D) g;
         grid.draw(g2);
-        if (!done && running) {
-            tick();
-        }
+        if (!done && running && c % rate == 0) tick();
         c++;
         repaint();
     }
@@ -48,11 +48,78 @@ public class Main extends JPanel {
             @Override
             public void keyReleased(KeyEvent e) {
                 char key = e.getKeyChar();
-                if (key == 'r') {
-                    resetGrid();
-                }
-                else if (key == 's') {
-                    running = true;
+                switch (key) {
+                    case 'r':
+                        resetGrid();
+                        break;
+                    case 's':
+                        running = true;
+                        break;
+                    case 'a':
+                        grid.clear();
+                        break;
+                    case 'n':
+                        try {
+                            Point mousePos = window.getMousePosition();
+                            int gridR = mousePos.y / 10 - 3;
+                            int gridC = mousePos.x / 10 - 1;
+                            grid.setNewStart(gridR, gridC);
+                            start = new Node(gridR, gridC);
+                            toBeConsidered.set(0, start);
+                            toBeConsideredCosts.set(0, start.calculateCost(end, algorithm));
+                        } catch (NullPointerException ignored) {
+                        }
+                        break;
+                    case 'm':
+                        try {
+                            Point mousePos = window.getMousePosition();
+                            int gridR = mousePos.y / 10 - 3;
+                            int gridC = mousePos.x / 10 - 1;
+                            grid.setNewEnd(gridR, gridC);
+                            end = new Node(gridR, gridC);
+                            toBeConsidered.set(0, start);
+                            toBeConsideredCosts.set(0, start.calculateCost(end, algorithm));
+                        } catch (NullPointerException ignored) {
+                        }
+                        break;
+                    case 'q':
+                        try {
+                            if (!running) {
+                                rate = Integer.parseInt(JOptionPane.showInputDialog(window,
+                                        "Enter a new algorithm speed", "Algorithm rate",
+                                        JOptionPane.PLAIN_MESSAGE));
+                                if (rate < 1) rate = 1;
+                            }
+                        }
+                        catch (NumberFormatException ignored) {
+                        }
+                        break;
+                    case 'w':
+                        try {
+                            if (!running) {
+                                float newFillRate = Float.parseFloat(JOptionPane.showInputDialog(window,
+                                        "Enter a new fill rate for the grid", "Fill rate",
+                                        JOptionPane.PLAIN_MESSAGE));
+                                // Clamp it from 0 to 1. ;)
+                                fillRate = newFillRate % 1;
+                            }
+                        }
+                        catch (NumberFormatException ignored) {
+                        }
+                        break;
+                    case 'e':
+                        if (!running) {
+                            Object[] options = {"ASTAR", "BRUTEFORCE", "STRAIGHTLINE"};
+                            int result = JOptionPane.showOptionDialog(window, "Pick an algorithm...",
+                                    "Pick Algorithm", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
+                                    null, options, options[0]);
+                            switch (result) {
+                                case 0 -> algorithm = Algorithm.ASTAR;
+                                case 1 -> algorithm = Algorithm.BRUTEFORCE;
+                                case 2 -> algorithm = Algorithm.STRAIGHTLINE;
+                            }
+                        }
+                        break;
                 }
             }
 
@@ -63,38 +130,26 @@ public class Main extends JPanel {
     }
 
     public void setupMouseListener() {
-        addMouseListener(new MouseListener() {
+        addMouseMotionListener(new MouseMotionListener() {
             @Override
-            public void mousePressed(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                Point mousePos = window.getMousePosition();
-                // IT IS NOT WRONG, I NEED IT LIKE THIS BECAUSE OF COORDS -> ARRAY LOCATIONS
-                int gridX = mousePos.y / 10 - 3;
-                int gridY = mousePos.x / 10 - 1;
-                System.out.println("X and Y are: " + mousePos.x + " " + mousePos.y);
-                if (SwingUtilities.isLeftMouseButton(e) && !running && mouseInWindow) {
-                    if (grid.getAt(gridX, gridY) == 0) grid.setAt(gridX, gridY, 1);
+            public void mouseDragged(MouseEvent e) {
+                try {
+                    Point mousePos = window.getMousePosition();
+                    // IT IS NOT WRONG, I NEED IT LIKE THIS BECAUSE OF COORDS -> ARRAY LOCATIONS
+                    int gridX = mousePos.y / 10 - 3;
+                    int gridY = mousePos.x / 10 - 1;
+                    if (SwingUtilities.isLeftMouseButton(e) && !running) {
+                        if (grid.getAt(gridX, gridY) == 0) grid.setAt(gridX, gridY, 1);
+                    } else if (SwingUtilities.isRightMouseButton(e) && !running) {
+                        if (grid.getAt(gridX, gridY) == 1) grid.setAt(gridX, gridY, 0);
+                    }
                 }
-                else if (SwingUtilities.isRightMouseButton(e) && !running && mouseInWindow) {
-                    if (grid.getAt(gridX, gridY) == 1) grid.setAt(gridX, gridY, 0);
+                catch (NullPointerException ignored) {
                 }
             }
 
             @Override
-            public void mouseEntered(MouseEvent e) {
-                mouseInWindow = true;
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                mouseInWindow = false;
+            public void mouseMoved(MouseEvent e) {
             }
         });
     }
@@ -102,7 +157,7 @@ public class Main extends JPanel {
     public static void resetGrid() {
         done = false;
         running = false;
-        grid.fillGrid(.25f);
+        grid.fillGrid(fillRate);
         Node temp = grid.chooseStartAndEnd();
         start = new Node(temp.x, temp.y);
         end = temp.getParent();
@@ -113,26 +168,27 @@ public class Main extends JPanel {
         pathLength = 0;
         c = 0;
         toBeConsidered.add(start);
-        toBeConsideredCosts.add(start.calculateCost(end));
+        toBeConsideredCosts.add(start.calculateCost(end, algorithm));
     }
 
     private static void tick() {
         try {
             consider(toBeConsidered.remove(0));
         }
-        catch (Exception e) {
-            System.out.println("No path was found");
+        catch (IndexOutOfBoundsException e) {
             done = true;
+            running = false;
         }
     }
 
     private static void consider(Node toConsider) {
         considered.add(toConsider);
-        grid.setAt(toConsider.x, toConsider.y, 3);
+        // So that it only sets color if we're NOT considering the start.
+        if (toBeConsideredCosts.size() > 1) grid.setAt(toConsider.x, toConsider.y, 3);
         if (toConsider.x == end.x && toConsider.y == end.y) {
             calculateFinalPath(toConsider);
-            System.out.println(pathLength);
             done = true;
+            running = false;
             return;
         }
         int[][] directions = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}};
@@ -156,7 +212,7 @@ public class Main extends JPanel {
     }
 
     private static void addToBeConsidered(Node subject) {
-        int cost = subject.calculateCost(end);
+        int cost = subject.calculateCost(end, algorithm);
         int index = findOptimalIndex(cost);
         if (index >= toBeConsidered.size()) {
             toBeConsidered.add(subject);
@@ -179,37 +235,30 @@ public class Main extends JPanel {
     public static void main(String[] args) {
         JFrame window = new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        int width = 666;
-        int height = 700;
+        int width = 616;
+        int height = 616;
         window.setBounds(0, 0, width, height + 22); // (x, y, w, h) 22 due to title bar.
 
-        JPanel screenPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
+        JOptionPane.showMessageDialog(window,
+                """
+                        Welcome to Pathfinding! Controls are:
+                            Q: Change algorithm speed; Default: 1
+                            W: Change fill rate; Default: .25 (try .375!)
+                            E: Change algorithm
+                            R: Reset grid and pick new start and end positions
+                            A: Clear grid (except for start and end)
+                            S: Start algorithm
+                            N and M: Move start and end (respectively) to your mouse position
+                            Left/Right mouse button: Make square the mouse is over wall or empty (draggable!)
+                        """,
+                "Instructions",
+                JOptionPane.INFORMATION_MESSAGE
+        );
 
         Main panel = new Main(width, height);
         panel.setFocusable(true);
-        panel.setVisible(true);
-
-        c.fill = GridBagConstraints.BOTH;
-        c.gridx = 0;
-        c.gridy = 0;
-        c.ipadx = 616;
-        c.ipady = 616;
-        screenPanel.add(panel, c);
-
-        JSlider slider = new JSlider(JSlider.HORIZONTAL, 1, 31, 1);
-        slider.setMajorTickSpacing(10);
-        slider.setMinorTickSpacing(1);
-        slider.setPaintTicks(true);
-        slider.setPaintLabels(true);
-
-        c.fill = GridBagConstraints.HORIZONTAL;
-        c.gridy = 1;
-        c.ipadx = 100;
-        c.ipady = 84;
-        screenPanel.add(slider, c);
-
-        window.add(screenPanel);
+        panel.grabFocus();
+        window.add(panel);
         window.setVisible(true);
         window.setResizable(true);
         Main.window = window;

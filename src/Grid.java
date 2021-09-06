@@ -88,4 +88,36 @@ public class Grid {
         }
         return grid[x][y];
     }
+
+    public void setNewStart(int r, int c) {
+        for (int c2 = 0; c2 < this.width; c2++) {
+            for (int r2 = 0; r2 < this.height; r2++) {
+                if (grid[r2][c2] == 5) {
+                    grid[r2][c2] = 0;
+                }
+            }
+        }
+        grid[r][c] = 5;
+    }
+
+    public void setNewEnd(int r, int c) {
+        for (int c2 = 0; c2 < this.width; c2++) {
+            for (int r2 = 0; r2 < this.height; r2++) {
+                if (grid[r2][c2] == 6) {
+                    grid[r2][c2] = 0;
+                }
+            }
+        }
+        grid[r][c] = 6;
+    }
+
+    public void clear() {
+        for (int c = 0; c < this.width; c++) {
+            for (int r = 0; r < this.height; r++) {
+                if (grid[r][c] == 1) {
+                    grid[r][c] = 0;
+                }
+            }
+        }
+    }
 }
