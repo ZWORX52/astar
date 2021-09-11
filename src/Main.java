@@ -79,7 +79,7 @@ public class Main extends JPanel {
                             end = new Node(gridR, gridC);
                             toBeConsidered.set(0, start);
                             toBeConsideredCosts.set(0, start.calculateCost(end, algorithm));
-                        } catch (NullPointerException ignored) {
+                        } catch (NullPointerException | ArrayIndexOutOfBoundsException ignored) {
                         }
                         break;
                     case 'q':
@@ -178,6 +178,8 @@ public class Main extends JPanel {
         catch (IndexOutOfBoundsException e) {
             done = true;
             running = false;
+            JOptionPane.showMessageDialog(window, "Path no work", "Path length",
+                    JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -189,6 +191,8 @@ public class Main extends JPanel {
             calculateFinalPath(toConsider);
             done = true;
             running = false;
+            JOptionPane.showMessageDialog(window, "Path length: " + pathLength, "Path length",
+                    JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         int[][] directions = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}};
