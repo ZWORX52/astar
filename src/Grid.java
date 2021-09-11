@@ -1,5 +1,3 @@
-﻿import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.awt.*;
 
@@ -120,35 +118,6 @@ public class Grid {
                     grid[r][c] = 0;
                 }
             }
-        }
-    }
-
-    public void logGrid() {
-        try (BufferedWriter writer = new BufferedWriter(
-                new OutputStreamWriter(
-                        new FileOutputStream("grid_log.txt"),
-                        StandardCharsets.UTF_8))) {
-            for (int r = 0; r < height; r++) {
-                for (int c = 0; c < width; c++) {
-                    switch (grid[r][c]) {
-                        case 0 -> writer.write(" ");
-                        case 1 -> writer.write("█");
-                        case 3 -> writer.write("+");
-                        case 4 -> writer.write("▒");
-                        case 5 -> writer.write("Θ");
-                        case 6 -> writer.write("#");
-                    }
-                }
-                writer.newLine();
-            }
-            writer.newLine();
-            writer.newLine();
-            writer.newLine();
-            writer.newLine();
-            writer.newLine();
-            writer.newLine();
-            writer.flush();
-        } catch (IOException ignored) {
         }
     }
 }

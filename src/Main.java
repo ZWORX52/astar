@@ -184,7 +184,7 @@ public class Main extends JPanel {
                     new OutputStreamWriter(
                             new FileOutputStream("length_log.txt"),
                             StandardCharsets.UTF_8))) {
-                writer.write("Path not found for path #" + pathsDone + ".\n");
+                writer.append("Path not found for path #").append(String.valueOf(pathsDone)).append(".\n");
                 writer.flush();
 //                grid.logGrid();
             } catch (IOException ignored) {
