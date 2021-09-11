@@ -1,7 +1,9 @@
 import java.awt.event.*;
 import javax.swing.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.awt.*;
+import java.io.*;
 
 
 public class Main extends JPanel {
@@ -12,6 +14,7 @@ public class Main extends JPanel {
     static int c;
     static int rate = 1;
     static int pathLength;
+    static int pathsDone;
     static float fillRate = .25f;
     static boolean done;
     static boolean running;
@@ -176,10 +179,18 @@ public class Main extends JPanel {
             consider(toBeConsidered.remove(0));
         }
         catch (IndexOutOfBoundsException e) {
+            pathsDone++;
+            try (BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(
+                            new FileOutputStream("length_log.txt"),
+                            StandardCharsets.UTF_8))) {
+                writer.write("Path not found for path #" + pathsDone + ".\n");
+                writer.flush();
+//                grid.logGrid();
+            } catch (IOException ignored) {
+            }
             done = true;
             running = false;
-            JOptionPane.showMessageDialog(window, "Path no work", "Path length",
-                    JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -189,10 +200,18 @@ public class Main extends JPanel {
         if (toBeConsideredCosts.size() > 1) grid.setAt(toConsider.x, toConsider.y, 3);
         if (toConsider.x == end.x && toConsider.y == end.y) {
             calculateFinalPath(toConsider);
+            pathsDone++;
+            try (BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(
+                    new FileOutputStream("length_log.txt"),
+                    StandardCharsets.UTF_8))) {
+                writer.write("Path length for path #" + pathsDone + " is " + pathLength + ".\n");
+                writer.flush();
+//                grid.logGrid();
+            } catch (IOException ignored) {
+            }
             done = true;
             running = false;
-            JOptionPane.showMessageDialog(window, "Path length: " + pathLength, "Path length",
-                    JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         int[][] directions = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}};
@@ -259,14 +278,6 @@ public class Main extends JPanel {
                 JOptionPane.INFORMATION_MESSAGE
         );
 
-        Main panel = new Main(width, height);
-        panel.setFocusable(true);
-        panel.grabFocus();
-        window.add(panel);
-        window.setVisible(true);
-        window.setResizable(true);
-        Main.window = window;
-
         grid = new Grid(60, 60, width, height);
         grid.fillGrid(.25f);
         Node temp = grid.chooseStartAndEnd();
@@ -275,5 +286,14 @@ public class Main extends JPanel {
         // Now, start the algorithm by putting the start in the toBeConsidered list
         toBeConsidered.add(start);
         toBeConsideredCosts.add(start.calculateCost(end));
+
+        Main panel = new Main(width, height);
+        panel.setFocusable(true);
+        panel.grabFocus();
+        window.add(panel);
+        window.setVisible(true);
+        window.setResizable(true);
+        Main.window = window;
+
     }
 }
